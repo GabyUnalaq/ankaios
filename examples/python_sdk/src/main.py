@@ -1,4 +1,4 @@
-from AnkaiosSDK import Ankaios, Workload
+from ankaios_sdk import Ankaios, Workload
 import time
 
 WAITING_TIME_IN_SEC = 5

@@ -11,10 +11,11 @@ RUN apk update && apk add --update-cache \
     git \
     && rm -rf /var/cache/apk/*
 
-# Setup python sdk
-RUN mkdir /usr/local/lib/ank-sdk-python
-RUN git clone https://github.com/GabyUnalaq/ank-sdk-python.git /usr/local/lib/ank-sdk-python
-RUN python3 -m pip install /usr/local/lib/ank-sdk-python
+# Install Ankaios Python SDK
+RUN python3 -m pip install \
+    -i https://test.pypi.org/simple/ \
+    --extra-index-url https://pypi.org/simple/ \
+    ankaios-sdk-test
 
 # Prepare main script
 RUN mkdir /usr/local/lib/ankaios
