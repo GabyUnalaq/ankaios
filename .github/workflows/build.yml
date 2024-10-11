@@ -115,6 +115,7 @@ jobs:
         sudo dpkg --add-architecture i386
         sudo apt-get update
         sudo apt-get install gcc-i686-linux-gnu libc6-dev-i386
+        sudo apt-get install protobuf-compiler
 
     - name: Build 32-bit
       run: cargo build --target i686-unknown-linux-gnu --release
