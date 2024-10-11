@@ -94,65 +94,33 @@ jobs:
         with:
           name: code-coverage
           path: target/llvm-cov/html
-
-
-  build_linux_amd64_debian_package:
-    name: Build Linux amd64 debian package
+          
+  build_32_bit:
+    name: Test 32 bit compilation
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/eclipse-ankaios/devcontainer-base:0.10.2
-      options: --privileged
     steps:
-      - uses: actions/checkout@v4.1.1
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      # Install musl target for 64-bit and 32-bit
-      - name: Install targets for 64-bit and 32-bit builds
-        run: |
-          rustup target add x86_64-unknown-linux-musl
-          rustup target add i686-unknown-linux-musl
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        target: i686-unknown-linux-gnu
+        override: true
+        components: rust-src, rustfmt, clippy
 
-      # Build for 64-bit architecture
-      - name: Build linux-amd64 release-mode
-        run: |
-          sudo apt-get install gcc-multilib libc6-dev-i386
-          cargo build --release --target x86_64-unknown-linux-musl
-          mkdir -p dist/
-          cp target/x86_64-unknown-linux-musl/release/ank target/x86_64-unknown-linux-musl/release/ank-server target/x86_64-unknown-linux-musl/release/ank-agent dist/
-      - uses: actions/upload-artifact@v4.3.3
-        with:
-          name: ankaios-linux-amd64-bin
-          path: dist/
+    - name: Install dependencies
+      run: |
+        sudo dpkg --add-architecture i386
+        sudo apt-get update
+        sudo apt-get install gcc-i686-linux-gnu libc6-dev-i386
 
-      - name: Install 32-bit toolchain
-        run: rustup target add i686-unknown-linux-gnu
-        
-      - name: Build linux-i686 release-mode
-        run: |
-          cargo build --release --target i686-unknown-linux-gnu
-          mkdir -p dist/
-          cp target/i686-unknown-linux-gnu/release/ank target/i686-unknown-linux-gnu/release/ank-server target/i686-unknown-linux-gnu/release/ank-agent dist/
-      - uses: actions/upload-artifact@v4.3.3
-        with:
-          name: ankaios-linux-i686-bin
-          path: dist-i686/
+    - name: Build 32-bit
+      run: cargo build --target i686-unknown-linux-gnu --release
 
-      # Build 64-bit Debian package
-      - name: Build linux-amd64 debian package
-        run: |
-          cargo deb -p ank --target x86_64-unknown-linux-musl
-      - uses: actions/upload-artifact@v4.3.3
-        with:
-          name: ankaios-linux-amd64-deb
-          path: target/x86_64-unknown-linux-musl/debian/ankaios*.deb
-
-      # Build 32-bit Debian package
-      - name: Build linux-i686 debian package
-        run: |
-          cargo deb -p ank --target i686-unknown-linux-musl
-      - uses: actions/upload-artifact@v4.3.3
-        with:
-          name: ankaios-linux-i686-deb
-          path: target/i686-unknown-linux-musl/debian/ankaios*.deb
+    - name: Run tests
+      run: cargo test --target i686-unknown-linux-gnu --release
 
   build_linux_arm64:
     # currently there is no arm64 github built-in runner available
