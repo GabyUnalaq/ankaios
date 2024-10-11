@@ -104,9 +104,17 @@ jobs:
       options: --privileged
     steps:
       - uses: actions/checkout@v4.1.1
+
+      # Install musl target for 64-bit and 32-bit
+      - name: Install targets for 64-bit and 32-bit builds
+        run: |
+          rustup target add x86_64-unknown-linux-musl
+          rustup target add i686-unknown-linux-musl
+
+      # Build for 64-bit architecture
       - name: Build linux-amd64 release-mode
         run: |
-          cargo build --release
+          cargo build --release --target x86_64-unknown-linux-musl
           mkdir -p dist/
           cp target/x86_64-unknown-linux-musl/release/ank target/x86_64-unknown-linux-musl/release/ank-server target/x86_64-unknown-linux-musl/release/ank-agent dist/
       - uses: actions/upload-artifact@v4.3.3
@@ -114,6 +122,18 @@ jobs:
           name: ankaios-linux-amd64-bin
           path: dist/
 
+      # Build for 32-bit architecture
+      - name: Build linux-i686 release-mode
+        run: |
+          cargo build --release --target i686-unknown-linux-musl
+          mkdir -p dist-i686/
+          cp target/i686-unknown-linux-musl/release/ank target/i686-unknown-linux-musl/release/ank-server target/i686-unknown-linux-musl/release/ank-agent dist-i686/
+      - uses: actions/upload-artifact@v4.3.3
+        with:
+          name: ankaios-linux-i686-bin
+          path: dist-i686/
+
+      # Build 64-bit Debian package
       - name: Build linux-amd64 debian package
         run: |
           cargo deb -p ank --target x86_64-unknown-linux-musl
@@ -121,6 +141,15 @@ jobs:
         with:
           name: ankaios-linux-amd64-deb
           path: target/x86_64-unknown-linux-musl/debian/ankaios*.deb
+
+      # Build 32-bit Debian package
+      - name: Build linux-i686 debian package
+        run: |
+          cargo deb -p ank --target i686-unknown-linux-musl
+      - uses: actions/upload-artifact@v4.3.3
+        with:
+          name: ankaios-linux-i686-deb
+          path: target/i686-unknown-linux-musl/debian/ankaios*.deb
 
   build_linux_arm64:
     # currently there is no arm64 github built-in runner available
