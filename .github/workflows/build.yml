@@ -122,17 +122,14 @@ jobs:
           name: ankaios-linux-amd64-bin
           path: dist/
 
-      - name: Set CC for i686 build
-        run: |
-          export CC=i686-linux-gnu-gcc
-          cargo build --release --target i686-unknown-linux-musl
-
-      # Build for 32-bit architecture
+      - name: Install 32-bit toolchain
+        run: rustup target add i686-unknown-linux-gnu
+        
       - name: Build linux-i686 release-mode
         run: |
-          cargo build --release --target i686-unknown-linux-musl
-          mkdir -p dist-i686/
-          cp target/i686-unknown-linux-musl/release/ank target/i686-unknown-linux-musl/release/ank-server target/i686-unknown-linux-musl/release/ank-agent dist-i686/
+          cargo build --release --target i686-unknown-linux-gnu
+          mkdir -p dist/
+          cp target/i686-unknown-linux-gnu/release/ank target/i686-unknown-linux-gnu/release/ank-server target/i686-unknown-linux-gnu/release/ank-agent dist/
       - uses: actions/upload-artifact@v4.3.3
         with:
           name: ankaios-linux-i686-bin
