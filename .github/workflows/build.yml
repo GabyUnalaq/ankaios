@@ -122,6 +122,11 @@ jobs:
           name: ankaios-linux-amd64-bin
           path: dist/
 
+      - name: Set CC for i686 build
+        run: |
+          export CC=i686-linux-gnu-gcc
+          cargo build --release --target i686-unknown-linux-musl
+
       # Build for 32-bit architecture
       - name: Build linux-i686 release-mode
         run: |
