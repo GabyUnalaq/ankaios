@@ -152,6 +152,9 @@ jobs:
         name: ankaios-linux-x86-bin
         path: dist/
 
+    - name: Install cargo-deb
+      run: cargo install cargo-deb
+
     - name: Build linux-x86 debian package
       run: |
         cargo deb -p ank --target i686-unknown-linux-gnu
