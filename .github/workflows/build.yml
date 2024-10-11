@@ -114,6 +114,7 @@ jobs:
       # Build for 64-bit architecture
       - name: Build linux-amd64 release-mode
         run: |
+          sudo apt-get install gcc-multilib libc6-dev-i386
           cargo build --release --target x86_64-unknown-linux-musl
           mkdir -p dist/
           cp target/x86_64-unknown-linux-musl/release/ank target/x86_64-unknown-linux-musl/release/ank-server target/x86_64-unknown-linux-musl/release/ank-agent dist/
