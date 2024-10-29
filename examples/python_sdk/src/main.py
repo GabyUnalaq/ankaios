@@ -23,7 +23,7 @@ if __name__ == "__main__":
         # Request complete state and print it
         complete_state = ankaios.get_state(
             timeout=5,
-            field_mask=["workloadStates.agent_A.dynamic_nginx"])
+            field_masks=["workloadStates.agent_A.dynamic_nginx"])
 
         # Print complete state
         print(complete_state)
