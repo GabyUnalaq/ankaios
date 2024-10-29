@@ -271,6 +271,10 @@ impl Object {
         }
         Some(current_obj)
     }
+
+    pub fn check_if_provided_path_exists(&self, path: &Path) -> bool {
+        self.get(path).is_some()
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -732,7 +736,12 @@ mod tests {
                 )
                 .entry(
                     "agents",
-                    Mapping::default().entry(agent_name, Mapping::default()),
+                    Mapping::default().entry(
+                        agent_name,
+                        Mapping::default()
+                            .entry("cpu_usage", Mapping::default().entry("cpu_usage", 42))
+                            .entry("free_memory", Mapping::default().entry("free_memory", 42)),
+                    ),
                 )
         }
 
@@ -766,8 +775,21 @@ mod tests {
                                 Mapping::default()
                                     .entry("allowRules", vec![] as Vec<Value>)
                                     .entry("denyRules", vec![] as Vec<Value>),
+                            )
+                            .entry(
+                                "configs",
+                                Mapping::default()
+                                    .entry("ref1", "config_1")
+                                    .entry("ref2", "config_2")
                             ),
                     ),
+                )
+                .entry(
+                    "configs",
+                    Mapping::default()
+                        .entry("config_1", "value 1")
+                        .entry("config_2", "value 2")
+                        .entry("config_3", "value 3")
                 )
         }
 
