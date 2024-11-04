@@ -30,4 +30,5 @@ COPY examples/python_sdk /ankaios
 ENV PYTHONPATH="${PYTHONPATH}:/usr/local/lib/ankaios"
 
 # Specify entry point
-ENTRYPOINT ["python3", "-u", "/ankaios/src/main.py"]
+ENTRYPOINT ["python3", "-u", "/ankaios/src/sleep.py"]
+# ENTRYPOINT ["python3", "-u", "/ankaios/src/main.py"]
