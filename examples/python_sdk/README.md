@@ -10,6 +10,20 @@ In the src folder, there are 3 scripts:
 
 If the Dockerfile is configured using the `sleep.py` script, all the steps bellow can be followed to run custom sdk commands.
 
+For full access, the startupState.yaml can be changed with:
+
+```yaml
+apiVersion: v0.1
+workloads:
+  control_interface_example:
+    controlInterfaceAccess:
+      allowRules:
+        - type: StateRule
+          operation: ReadWrite
+          filterMask:
+            - "*"
+```
+
 ## Start the container
 
 ```sh
