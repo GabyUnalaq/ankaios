@@ -4,7 +4,7 @@ This explains how to work with the python sdk example.
 
 In the src folder, there are 3 scripts:
 
-* `main.py`: The original example that starts a workload and gets the state every 5 seconds
+* `original_example.py`: The original example that starts a workload and gets the state every 5 seconds
 * `sleep.py`: Sleep forever, until the container gets forcefully closed.
 * `vars.py`: In here the user can declare variables to prepare the run.
 
