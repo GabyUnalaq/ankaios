@@ -148,8 +148,8 @@ It should print:
 
 ```text
 NAME           WORKLOADS      CPU USAGE      FREE MEMORY
-agent_A        2              42.42%         42B
-infotainment   0              42.42%         42B
+agent_A        2              42%            42B
+infotainment   0              42%            42B
 ```
 
 Since `agent_A` is already managing the `databroker` and the `speed-provider` workloads, the `WORKLOADS` column contains the number `2`. The Ankaios agent `infotainment` has recently been started and does not yet manage any workloads.
@@ -449,12 +449,26 @@ After running one of these commands, the `speed-provider` workload has been upda
 
 You can verify this by re-opening the web UI on <http://127.0.0.1:5000>.
 
+### List configuration items
+
+Let's list the configuration items present in current state with the `ank get configs` command.
+
+Using `ank -k get configs`, it should print:
+
+```text
+CONFIGS
+network
+env_provider
+env_consumer
+agents
+```
+
 ### Delete configuration items
 
 Let's try to delete a configuration item still referenced by workloads in its `configs` field by re-using the previous manifest content.
 
 ```shell
-ank -k apply -d new-manifest.yaml
+ank -k delete config env_provider
 ```
 
 The command returns an error that the rendering of the new state fails due to a missing configuration item.
@@ -463,4 +477,4 @@ Ankaios will always reject a new state if it fails to render. The `speed-provide
 
 Running the `ank -k get state` command afterwards will show that Ankaios still has the previous state in memory.
 
-To remove configuration items, remove the configuration references for the desired configuration items in the workload's `configs` field, and remove the desired configuration items from the state. This can be done in a single step.
+To remove configuration items, remove the configuration references for the desired configuration items in the workload's `configs` field, and remove the desired configuration items from the state.
