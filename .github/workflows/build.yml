@@ -100,7 +100,6 @@ jobs:
           name: code-coverage
           path: target/llvm-cov/html
 
-
   build_linux_amd64_debian_package:
     name: Build Linux amd64 debian package
     runs-on: ubuntu-latest
@@ -126,6 +125,51 @@ jobs:
         with:
           name: ankaios-linux-amd64-deb
           path: target/x86_64-unknown-linux-musl/debian/ankaios*.deb
+          
+  build_32_bit:
+    name: Test 32 bit compilation
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4.1.1
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        target: i686-unknown-linux-gnu
+        override: true
+        components: rust-src, rustfmt, clippy
+
+    - name: Install dependencies
+      run: |
+        sudo dpkg --add-architecture i386
+        sudo apt-get update
+        sudo apt-get install gcc-i686-linux-gnu libc6-dev-i386 protobuf-compiler
+
+    - name: Build linux-x86 release-mode
+      run: |
+        cargo build --target i686-unknown-linux-gnu --release
+        mkdir -p dist/
+        cp target/i686-unknown-linux-gnu/release/ank target/i686-unknown-linux-gnu/release/ank-server target/i686-unknown-linux-gnu/release/ank-agent dist/
+    - uses: actions/upload-artifact@v4.3.3
+      with:
+        name: ankaios-linux-x86-bin
+        path: dist/
+
+    - name: Install cargo-deb
+      run: cargo install cargo-deb
+
+    - name: Build linux-x86 debian package
+      run: |
+        cargo deb -p ank --target i686-unknown-linux-gnu
+    - uses: actions/upload-artifact@v4.3.3
+      with:
+        name: ankaios-linux-x86-deb
+        path: target/i686-unknown-linux-gnu/debian/ankaios*.deb
+
+    - name: Run tests
+      run: cargo test --target i686-unknown-linux-gnu --release
 
   build_linux_arm64:
     # currently there is no arm64 github built-in runner available
