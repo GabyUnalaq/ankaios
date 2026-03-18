@@ -24,7 +24,7 @@ Use this skill to validate tutorials by directly following tutorial steps as the
 ## Temporary workspace (required)
 
 - If you need to create tutorial-generated files in the repository workspace, use a dedicated folder under `target` (for example `target/tutorial-check-outputs`) and clean it up at the end.
-- Create all needed files there (for example `databroker.yaml`, `speed-provider.yaml`, `speed-consumer.yaml`, `fleetconnector.yaml`, `vehicle-data-sender.yaml`, `config.yaml`, `main.py`, `Dockerfile`).
+- Create all required files and intermediate files inside the dedicated folder
 - Run file-dependent commands from that temp directory (or use absolute temp paths) so no accidental repo files are produced.
 - At the end, report the temp directory used and whether cleanup was performed.
 
