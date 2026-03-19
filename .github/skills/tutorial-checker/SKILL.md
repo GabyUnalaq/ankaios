@@ -33,17 +33,18 @@ Use this skill to validate tutorials by directly following tutorial steps as the
 For each selected tutorial:
 
 1. Parse markdown and extract shell code blocks.
-1. Split multiline shell blocks into executable commands (respect line continuations using `\`).
-1. Run reach step one by one.
-1. For each command:
+2. Split multiline shell blocks into executable commands (respect line continuations using `\`).
+3. Run reach step one by one.
+4. For each command:
     - Show progress before execution (`Tutorial X/Y - Step A/B: <command>`).
     - Classify step as `execute`, `transform-and-execute`, `skip-manual`, or `skip-unsafe`.
     - Execute safe commands in terminal and capture stdout/stderr + exit code.
     - If a waiting time is required before the next command, don't combine it with the next command as this may affect allowed command detection and execution.
-1. Validate expectations:
+5. Validate expectations:
     - If surrounding text states "should print" and a following text block exists, compare output to expected snippets.
     - Mark step as failed if command fails or expected snippets are missing.
-1. Validate human understandability:
+    - Mark step as failed if a warning is present in the output even if the command succeeded, as this may indicate a problem with the tutorial or environment.
+6. Validate human understandability:
     - Review the tutorial text around each step and mark `understandable` or `unclear`.
     - Flag unclear items such as missing prerequisites, unexplained placeholders, ambiguous wording, missing expected result, or required manual context not stated.
 
