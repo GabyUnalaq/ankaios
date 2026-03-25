@@ -38,6 +38,7 @@ For each selected tutorial:
 4. For each command:
     - Show progress before execution (`Tutorial X/Y - Step A/B: <command>`).
     - Classify step as `execute`, `transform-and-execute`, `skip-manual`, or `skip-unsafe`.
+    - Systemd is not available inside the devcontainer, however if you use ankaios-start script that does not accept a startup manifest, just use ankaios-start and start on the manifest content dependent Ankaios agents additionally and apply the startup manifest of the tutorial with a simple `ank apply` instead. Classify the step as `transform-and-execute` and report the transformation in the final report.
     - Execute safe commands in terminal and capture stdout/stderr + exit code.
     - If a waiting time is required before the next command, don't combine it with the next command as this may affect allowed command detection and execution.
 5. Validate expectations:
