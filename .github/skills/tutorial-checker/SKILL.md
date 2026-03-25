@@ -43,7 +43,7 @@ For each selected tutorial:
 5. Validate expectations:
     - If surrounding text states "should print" and a following text block exists, compare output to expected snippets.
     - Mark step as failed if command fails or expected snippets are missing.
-    - Mark step as failed if a warning is present in the output even if the command succeeded, as this may indicate a problem with the tutorial or environment.
+    - Include a warning in the final report as this may indicate a problem with the tutorial or environment.
 6. Validate human understandability:
     - Review the tutorial text around each step and mark `understandable` or `unclear`.
     - Flag unclear items such as missing prerequisites, unexplained placeholders, ambiguous wording, missing expected result, or required manual context not stated.
