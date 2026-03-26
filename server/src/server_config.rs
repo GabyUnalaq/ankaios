@@ -16,7 +16,13 @@ use crate::cli::Arguments;
 use common::DEFAULT_SOCKET_ADDRESS;
 use common::config::{CONFIG_VERSION, ConfigFile, ConversionErrors};
 use common::std_extensions::{UnreachableOption, UnreachableResult};
+
+use grpc::security::PemFileType;
+
+#[cfg(not(test))]
 use grpc::security::read_pem_file;
+#[cfg(test)]
+use tests::read_pem_file;
 
 use serde::{Deserialize, Deserializer};
 use std::fs::read_to_string;
@@ -95,17 +101,17 @@ impl ConfigFile for ServerConfig {
         }
 
         if let Some(ca_pem_path) = &server_config.ca_pem {
-            let ca_pem_content = read_pem_file(ca_pem_path, false)
+            let ca_pem_content = read_pem_file(ca_pem_path, PemFileType::Certificate)
                 .map_err(|err| ConversionErrors::InvalidCertificate(err.to_string()))?;
             server_config.ca_pem_content = Some(ca_pem_content);
         }
         if let Some(crt_pem_path) = &server_config.crt_pem {
-            let crt_pem_content = read_pem_file(crt_pem_path, false)
+            let crt_pem_content = read_pem_file(crt_pem_path, PemFileType::Certificate)
                 .map_err(|err| ConversionErrors::InvalidCertificate(err.to_string()))?;
             server_config.crt_pem_content = Some(crt_pem_content);
         }
         if let Some(key_pem_path) = &server_config.key_pem {
-            let key_pem_content = read_pem_file(key_pem_path, false)
+            let key_pem_content = read_pem_file(key_pem_path, PemFileType::PrivateKey)
                 .map_err(|err| ConversionErrors::InvalidCertificate(err.to_string()))?;
             server_config.key_pem_content = Some(key_pem_content);
         }
@@ -115,7 +121,7 @@ impl ConfigFile for ServerConfig {
 }
 
 impl ServerConfig {
-    pub fn update_with_args(&mut self, args: &Arguments) {
+    pub fn update_with_args(&mut self, args: &Arguments) -> Result<(), String> {
         if let Some(path) = &args.manifest_path {
             self.startup_manifest = Some(path.to_string());
         }
@@ -130,19 +136,23 @@ impl ServerConfig {
 
         if let Some(ca_pem_path) = &args.ca_pem {
             self.ca_pem = Some(ca_pem_path.to_owned());
-            let ca_pem_content = read_pem_file(ca_pem_path, false).unwrap_or_default();
+            let ca_pem_content = read_pem_file(ca_pem_path, PemFileType::Certificate)
+                .map_err(|err| err.to_string())?;
             self.ca_pem_content = Some(ca_pem_content);
         }
         if let Some(crt_pem_path) = &args.crt_pem {
             self.crt_pem = Some(crt_pem_path.to_owned());
-            let crt_pem_content = read_pem_file(crt_pem_path, false).unwrap_or_default();
+            let crt_pem_content = read_pem_file(crt_pem_path, PemFileType::Certificate)
+                .map_err(|err| err.to_string())?;
             self.crt_pem_content = Some(crt_pem_content);
         }
         if let Some(key_pem_path) = &args.key_pem {
             self.key_pem = Some(key_pem_path.to_owned());
-            let key_pem_content = read_pem_file(key_pem_path, false).unwrap_or_default();
+            let key_pem_content = read_pem_file(key_pem_path, PemFileType::PrivateKey)
+                .map_err(|err| err.to_string())?;
             self.key_pem_content = Some(key_pem_content);
         }
+        Ok(())
     }
 }
 
@@ -172,6 +182,30 @@ mod tests {
 
     const STARTUP_MANIFEST_PATH: &str = "some_path_to_config/config.yaml";
     const TEST_SOCKET_ADDRESS: &str = "127.0.0.1:3333";
+
+    use grpc::grpc_middleware_error::GrpcMiddlewareError;
+    use grpc::security::PemFileType;
+
+    // Stub read_pem_file for testing - returns fixture content based on path
+    pub fn read_pem_file<S: AsRef<std::ffi::OsStr>>(
+        pem_file_path: S,
+        _file_type: PemFileType,
+    ) -> Result<String, GrpcMiddlewareError> {
+        let path_str = pem_file_path.as_ref().to_string_lossy();
+
+        if path_str.contains("ca.pem") {
+            Ok(fixtures::CA_PEM_CONTENT.to_string())
+        } else if path_str.contains("crt.pem") {
+            Ok(fixtures::CRT_PEM_CONTENT.to_string())
+        } else if path_str.contains("key.pem") {
+            Ok(fixtures::KEY_PEM_CONTENT.to_string())
+        } else {
+            Err(GrpcMiddlewareError::CertificateError(format!(
+                "Unknown test fixture path: {}",
+                path_str
+            )))
+        }
+    }
 
     // [utest->swdd~server-loads-config-file~2]
     #[test]
@@ -244,7 +278,7 @@ mod tests {
             key_pem: Some(fixtures::KEY_PEM_PATH.to_string()),
         };
 
-        server_config.update_with_args(&args);
+        server_config.update_with_args(&args).unwrap();
 
         assert_eq!(
             server_config.startup_manifest,
@@ -266,6 +300,18 @@ mod tests {
         assert_eq!(
             server_config.key_pem,
             Some(fixtures::KEY_PEM_PATH.to_string())
+        );
+        assert_eq!(
+            server_config.ca_pem_content,
+            Some(fixtures::CA_PEM_CONTENT.to_string())
+        );
+        assert_eq!(
+            server_config.crt_pem_content,
+            Some(fixtures::CRT_PEM_CONTENT.to_string())
+        );
+        assert_eq!(
+            server_config.key_pem_content,
+            Some(fixtures::KEY_PEM_CONTENT.to_string())
         );
     }
 
@@ -299,7 +345,7 @@ mod tests {
             key_pem: None,
         };
 
-        server_config.update_with_args(&args);
+        server_config.update_with_args(&args).unwrap();
 
         assert_eq!(
             server_config.ca_pem_content,

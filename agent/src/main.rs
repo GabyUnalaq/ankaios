@@ -137,7 +137,8 @@ async fn main() {
     let mut agent_config: AgentConfig =
         handle_config(&args.config_path, &DEFAULT_AGENT_CONFIG_FILE_PATH);
 
-    agent_config.update_with_args(&args);
+    agent_config.update_with_args(&args)
+        .unwrap_or_exit("Failed to load certificate files!");
 
     validate_agent_name(&agent_config.name)
         .unwrap_or_exit("Error encountered while checking agent name!");

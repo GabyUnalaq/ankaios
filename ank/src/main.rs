@@ -37,7 +37,8 @@ async fn main() {
     // [impl->swdd~cli-loads-config-file~2]
     let mut ank_config: AnkConfig =
         handle_config(&args.config_path, &DEFAULT_ANK_CONFIG_FILE_PATHS);
-    ank_config.update_with_args(&args);
+    ank_config.update_with_args(&args)
+        .unwrap_or_exit_func(|err| output_and_error!("{}", err), -1);
 
     let cli_name = "ank-cli";
 

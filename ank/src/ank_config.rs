@@ -16,7 +16,13 @@ use crate::cli::AnkCli;
 use common::DEFAULT_SERVER_ADDRESS;
 use common::config::{CONFIG_VERSION, ConfigFile, ConversionErrors};
 use common::std_extensions::{GracefulExitResult, UnreachableOption};
+
+use grpc::security::PemFileType;
+
+#[cfg(not(test))]
 use grpc::security::read_pem_file;
+#[cfg(test)]
+use tests::read_pem_file;
 
 use once_cell::sync::Lazy;
 use serde::de::value::MapDeserializer;
@@ -209,17 +215,17 @@ impl ConfigFile for AnkConfig {
         }
 
         if let Some(ca_pem_path) = &ank_config.ca_pem {
-            let ca_pem_content = read_pem_file(ca_pem_path, false)
+            let ca_pem_content = read_pem_file(ca_pem_path, PemFileType::Certificate)
                 .map_err(|err| ConversionErrors::InvalidCertificate(err.to_string()))?;
             ank_config.ca_pem_content = Some(ca_pem_content);
         }
         if let Some(crt_pem_path) = &ank_config.crt_pem {
-            let crt_pem_content = read_pem_file(crt_pem_path, false)
+            let crt_pem_content = read_pem_file(crt_pem_path, PemFileType::Certificate)
                 .map_err(|err| ConversionErrors::InvalidCertificate(err.to_string()))?;
             ank_config.crt_pem_content = Some(crt_pem_content);
         }
         if let Some(key_pem_path) = &ank_config.key_pem {
-            let key_pem_content = read_pem_file(key_pem_path, false)
+            let key_pem_content = read_pem_file(key_pem_path, PemFileType::PrivateKey)
                 .map_err(|err| ConversionErrors::InvalidCertificate(err.to_string()))?;
             ank_config.key_pem_content = Some(key_pem_content);
         }
@@ -229,7 +235,7 @@ impl ConfigFile for AnkConfig {
 }
 
 impl AnkConfig {
-    pub fn update_with_args(&mut self, args: &AnkCli) {
+    pub fn update_with_args(&mut self, args: &AnkCli) -> Result<(), String> {
         if let Some(response_timeout) = args.response_timeout_ms {
             self.response_timeout = response_timeout;
         }
@@ -253,19 +259,23 @@ impl AnkConfig {
 
         if let Some(ca_pem_path) = &args.ca_pem {
             self.ca_pem = Some(ca_pem_path.to_owned());
-            let ca_pem_content = read_pem_file(ca_pem_path, false).unwrap_or_default();
+            let ca_pem_content = read_pem_file(ca_pem_path, PemFileType::Certificate)
+                .map_err(|err| err.to_string())?;
             self.ca_pem_content = Some(ca_pem_content);
         }
         if let Some(crt_pem_path) = &args.crt_pem {
             self.crt_pem = Some(crt_pem_path.to_owned());
-            let crt_pem_content = read_pem_file(crt_pem_path, false).unwrap_or_default();
+            let crt_pem_content = read_pem_file(crt_pem_path, PemFileType::Certificate)
+                .map_err(|err| err.to_string())?;
             self.crt_pem_content = Some(crt_pem_content);
         }
         if let Some(key_pem_path) = &args.key_pem {
             self.key_pem = Some(key_pem_path.to_owned());
-            let key_pem_content = read_pem_file(key_pem_path, true).unwrap_or_default();
+            let key_pem_content = read_pem_file(key_pem_path, PemFileType::PrivateKey)
+                .map_err(|err| err.to_string())?;
             self.key_pem_content = Some(key_pem_content);
         }
+        Ok(())
     }
 }
 
@@ -294,6 +304,30 @@ mod tests {
     use tempfile::NamedTempFile;
 
     const TEST_SERVER_URL: &str = r"https://127.0.0.1:25555";
+
+    use grpc::grpc_middleware_error::GrpcMiddlewareError;
+    use grpc::security::PemFileType;
+
+    // Stub read_pem_file for testing - returns fixture content based on path
+    pub fn read_pem_file<S: AsRef<std::ffi::OsStr>>(
+        pem_file_path: S,
+        _file_type: PemFileType,
+    ) -> Result<String, GrpcMiddlewareError> {
+        let path_str = pem_file_path.as_ref().to_string_lossy();
+
+        if path_str.contains("ca.pem") {
+            Ok(fixtures::CA_PEM_CONTENT.to_string())
+        } else if path_str.contains("crt.pem") {
+            Ok(fixtures::CRT_PEM_CONTENT.to_string())
+        } else if path_str.contains("key.pem") {
+            Ok(fixtures::KEY_PEM_CONTENT.to_string())
+        } else {
+            Err(GrpcMiddlewareError::CertificateError(format!(
+                "Unknown test fixture path: {}",
+                path_str
+            )))
+        }
+    }
 
     // [utest->swdd~cli-loads-config-file~2]
     #[test]
@@ -384,7 +418,7 @@ mod tests {
             key_pem: Some(fixtures::KEY_PEM_PATH.to_string()),
         };
 
-        ank_config.update_with_args(&args);
+        ank_config.update_with_args(&args).unwrap();
 
         assert_eq!(ank_config.response_timeout, 5000);
         assert!(ank_config.verbose);
@@ -392,9 +426,30 @@ mod tests {
         assert!(ank_config.no_wait);
         assert!(!ank_config.insecure);
         assert_eq!(ank_config.server_url, TEST_SERVER_URL.to_string());
-        assert_eq!(ank_config.ca_pem, Some(fixtures::CA_PEM_PATH.to_string()));
-        assert_eq!(ank_config.crt_pem, Some(fixtures::CRT_PEM_PATH.to_string()));
-        assert_eq!(ank_config.key_pem, Some(fixtures::KEY_PEM_PATH.to_string()));
+        assert_eq!(
+            ank_config.ca_pem,
+            Some(fixtures::CA_PEM_PATH.to_string())
+        );
+        assert_eq!(
+            ank_config.crt_pem,
+            Some(fixtures::CRT_PEM_PATH.to_string())
+        );
+        assert_eq!(
+            ank_config.key_pem,
+            Some(fixtures::KEY_PEM_PATH.to_string())
+        );
+        assert_eq!(
+            ank_config.ca_pem_content,
+            Some(fixtures::CA_PEM_CONTENT.to_string())
+        );
+        assert_eq!(
+            ank_config.crt_pem_content,
+            Some(fixtures::CRT_PEM_CONTENT.to_string())
+        );
+        assert_eq!(
+            ank_config.key_pem_content,
+            Some(fixtures::KEY_PEM_CONTENT.to_string())
+        );
     }
 
     // [utest->swdd~cli-loads-config-file~2]
@@ -436,7 +491,7 @@ mod tests {
             key_pem: None,
         };
 
-        ank_config.update_with_args(&args);
+        ank_config.update_with_args(&args).unwrap();
 
         assert_eq!(
             ank_config.ca_pem_content,
@@ -491,7 +546,7 @@ mod tests {
             key_pem: None,
         };
 
-        ank_config.update_with_args(&args);
+        ank_config.update_with_args(&args).unwrap();
 
         assert!(!ank_config.verbose);
         assert!(!ank_config.quiet);
