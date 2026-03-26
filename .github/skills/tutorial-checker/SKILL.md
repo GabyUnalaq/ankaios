@@ -96,6 +96,7 @@ When a tutorial step says something like "open browser at `<url>`" or "use the w
 ### Reporting
 
 In the final report, list all curl commands executed under a separate **"Web form simulation"** subsection, including:
+
 - the original tutorial instruction
 - the curl discovery and submission commands
 - the response summary
