@@ -31,7 +31,7 @@
 import json, os
 import urllib.request, urllib.parse, base64
 
-NEXUS_URL = "http://16.170.166.146:8081"
+NEXUS_URL = "https://repo.eclipse.org"
 
 username = os.environ["REPO_TOKEN_USERNAME"]
 password = os.environ["REPO_TOKEN_PASSWORD"]

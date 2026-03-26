@@ -30,7 +30,7 @@ set -e
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 BASE_DIR="$SCRIPT_DIR/../../.."
-NEXUS_URL="http://16.170.166.146:8081"
+NEXUS_URL="https://repo.eclipse.org"
 REPOSITORY="${REPOSITORY:-ankaios-apt}"
 ARCH="${ARCH:-}"
 
