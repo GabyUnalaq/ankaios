@@ -105,7 +105,7 @@ pub mod security {
         let permissions = metadata.permissions();
         let mode = permissions.mode() & 0o777;
 
-        // [impl->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+        // [impl->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
         // Early exit if permissions are incorrect
         match file_type {
             PemFileType::PrivateKey => {
@@ -180,7 +180,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert_eq!(result, TEST_PEM_CONTENT);
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_read_pem_file_and_check_permissions() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -201,7 +201,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert!(matches!(error, GrpcMiddlewareError::CertificateError(_)));
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_private_key_fails_with_0777() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -216,7 +216,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert!(matches!(error, GrpcMiddlewareError::CertificateError(_)));
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_private_key_fails_with_0722() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -231,7 +231,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert!(matches!(error, GrpcMiddlewareError::CertificateError(_)));
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_private_key_fails_with_0610() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -246,7 +246,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert!(matches!(error, GrpcMiddlewareError::CertificateError(_)));
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_private_key_fails_with_0660() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -261,7 +261,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert!(matches!(error, GrpcMiddlewareError::CertificateError(_)));
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_private_key_fails_with_0602() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -276,7 +276,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert!(matches!(error, GrpcMiddlewareError::CertificateError(_)));
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_private_key_succeeds_with_0400() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -291,7 +291,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert_eq!(result, TEST_PEM_CONTENT);
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_certificate_succeeds_with_0644() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -306,7 +306,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert_eq!(result, TEST_PEM_CONTENT);
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_certificate_succeeds_with_0600() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -321,7 +321,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert_eq!(result, TEST_PEM_CONTENT);
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_certificate_succeeds_with_0400() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -336,7 +336,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert_eq!(result, TEST_PEM_CONTENT);
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_certificate_succeeds_with_0444() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -351,7 +351,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert_eq!(result, TEST_PEM_CONTENT);
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_certificate_fails_with_0666() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -366,7 +366,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert!(matches!(error, GrpcMiddlewareError::CertificateError(_)));
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_certificate_fails_with_0620() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -381,7 +381,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert!(matches!(error, GrpcMiddlewareError::CertificateError(_)));
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_certificate_fails_with_0602() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -396,7 +396,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert!(matches!(error, GrpcMiddlewareError::CertificateError(_)));
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_certificate_fails_with_0755() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -411,7 +411,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert!(matches!(error, GrpcMiddlewareError::CertificateError(_)));
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_certificate_fails_with_0744() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -426,7 +426,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert!(matches!(error, GrpcMiddlewareError::CertificateError(_)));
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_certificate_fails_with_0645() {
         let mut temp_file = NamedTempFile::new().unwrap();
@@ -441,7 +441,7 @@ MIIDrzCCAkGgAwIBAgIQBzANBgkqhkiG9w0BAQUFADCBiDELMAkGA1UEBhMCVVMx
         assert!(matches!(error, GrpcMiddlewareError::CertificateError(_)));
     }
 
-    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~1]
+    // [utest->swdd~grpc-checks-given-PEM-file-for-proper-unix-file-permission~2]
     #[test]
     fn test_certificate_fails_with_0654() {
         let mut temp_file = NamedTempFile::new().unwrap();
