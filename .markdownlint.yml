@@ -17,5 +17,8 @@ MD033:
 # Disables code block style checks because of syntax for "!!! Note"
 MD046: false
 
+# Allow emphasis (bold) used as a visual sub-section label without TOC entry
+MD036: false
+
 # Disable the need for descriptive text of links
 MD059: false
