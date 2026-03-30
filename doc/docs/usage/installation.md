@@ -121,7 +121,7 @@ ank-uninstall.sh
 
 The folder `/etc/ankaios` will remain.
 
-===
+---
 
 ### APT (Debian / Ubuntu)
 
@@ -162,14 +162,14 @@ sudo apt-get remove ankaios
 
 To remove individual components, replace `ankaios` with the specific package name.
 
-===
+---
 
 ### Manual download
 
 As an alternative to the installation script, the pre-built binaries can be downloaded manually from the Ankaios repository [here](https://github.com/eclipse-ankaios/ankaios/releases).
 This is useful if the automatic detection of the platform is failing in case of `uname` system command is not allowed or supported on the target.
 
-===
+---
 
 ### Build from source
 
