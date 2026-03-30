@@ -54,7 +54,7 @@ jobs:
         env:
           ANKAIOS_VERSION: ${{ steps.vars.outputs.version }}
           REVISION: ${{ inputs.revision }}
-        run: bash .github/scripts/debian/build_src_pkg.sh
+        run: bash tools/debian/build_src_pkg.sh
 
       - name: Upload source package
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
@@ -99,11 +99,11 @@ jobs:
         env:
           ANKAIOS_VERSION: ${{ needs.source-package.outputs.version }}
           REVISION: ${{ inputs.revision }}
-        run: bash .github/scripts/debian/build_bin_pkgs.sh
+        run: bash tools/debian/build_bin_pkgs.sh
 
       - name: Publish binary packages to Nexus
         env:
           ARCH: ${{ matrix.arch }}
           REPO_TOKEN_USERNAME: ${{ secrets.REPO_TOKEN_USERNAME }}
           REPO_TOKEN_PASSWORD: ${{ secrets.REPO_TOKEN_PASSWORD }}
-        run: bash .github/scripts/debian/publish_bin_pkgs.sh
+        run: bash tools/debian/publish_bin_pkgs.sh

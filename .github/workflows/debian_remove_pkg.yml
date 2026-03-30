@@ -41,4 +41,4 @@ jobs:
           REVISION: ${{ inputs.revision }}
           REPO_TOKEN_USERNAME: ${{ secrets.REPO_TOKEN_USERNAME }}
           REPO_TOKEN_PASSWORD: ${{ secrets.REPO_TOKEN_PASSWORD }}
-        run: python3 .github/scripts/debian/delete_pkg.py
+        run: python3 tools/debian/delete_pkg.py

@@ -1,6 +1,8 @@
 # Debian Packaging
 
-Scripts for building and signing Debian packages. Built on Ubuntu 22.04 (jammy), the packages are compatible with Ubuntu 22.04+, Debian 12+, and RHEL 10+ due to glibc 2.35.
+This folder contains scripts for building and publishing Debian packages. Built on Ubuntu 22.04 (jammy), the packages are compatible with Ubuntu 22.04+, Debian 12+ and other distributions which have at least glibc 2.35.
+
+These scripts are meant to be called only from the CI/CD. Running them locally might not work properly.
 
 | Script                | Purpose                                                                                         |
 |-----------------------|-------------------------------------------------------------------------------------------------|

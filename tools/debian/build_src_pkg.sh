@@ -37,7 +37,7 @@ else
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-BASE_DIR="$SCRIPT_DIR/../../.."
+BASE_DIR="$SCRIPT_DIR/../.."
 MAINTAINER="Eclipse Ankaios <ankaios-dev@eclipse.org>"
 LOG_LEVEL="info"
 RELEASE_URL="https://github.com/eclipse-ankaios/ankaios/releases/tag/v$ANKAIOS_VERSION"

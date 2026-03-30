@@ -26,7 +26,7 @@
 set -e
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-BASE_DIR="$SCRIPT_DIR/../../.."
+BASE_DIR="$SCRIPT_DIR/../.."
 ANKAIOS_VERSION="${ANKAIOS_VERSION:-1.0.0}"
 
 if [ -n "${REVISION}" ]; then
