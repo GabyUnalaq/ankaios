@@ -66,7 +66,9 @@ async fn main() {
     let mut server_config: ServerConfig =
         handle_config(&args.config_path, &DEFAULT_SERVER_CONFIG_FILE_PATH);
 
-    server_config.update_with_args(&args);
+    server_config
+        .update_with_args(&args)
+        .unwrap_or_exit("Failed to load certificate files!");
 
     log::debug!(
         "Starting the Ankaios server with \n\tserver address: '{}', \n\tstartup manifest path: '{}'",
