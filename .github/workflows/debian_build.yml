@@ -34,21 +34,20 @@ jobs:
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      - name: Install just
-        run: |
-          curl -sL "https://github.com/casey/just/releases/download/1.46.0/just-1.46.0-x86_64-unknown-linux-musl.tar.gz" | \
-            sudo tar xz --directory=/usr/local/bin just
-
       - name: Install build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            cargo \
             debhelper \
             dpkg-dev
 
-      - name: Vendor dependencies
-        run: just vendor
+      - name: Download vendored source from release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "v${{ steps.vars.outputs.version }}" \
+            --pattern "ankaios-vendored-source*.tar.gz"
+          tar --strip-components=1 -xzf ankaios-vendored-source*.tar.gz
 
       - name: Build source package
         env:
