@@ -124,7 +124,7 @@ Upstream-Contact: ${MAINTAINER}
 Source: https://github.com/eclipse-ankaios/ankaios
 
 Files: *
-Copyright: 2023 Elektrobit Automotive GmbH
+Copyright: 2026 Elektrobit Automotive GmbH
 License: Apache-2.0
  On Debian systems, the full text of the Apache License 2.0 can be found
  in /usr/share/common-licenses/Apache-2.0.
@@ -159,28 +159,28 @@ override_dh_auto_install:
 	install -D -m 644 server/config/ank-server.conf debian/ank-server/etc/ankaios/ank-server.conf
 	install -D -m 644 server/config/state.yaml debian/ank-server/etc/ankaios/state.yaml
 	install -D -m 644 README.md debian/ank-server/usr/share/doc/ank-server/README.md
-	mkdir -p debian/ank-server/usr/share/man/man8
-	help2man --no-info --section=8 --name="Ankaios server" \
-		target/$(RUST_HOST)/release/ank-server \
-		-o debian/ank-server/usr/share/man/man8/ank-server.8
 	# Agent
 	install -D -m 755 target/$(RUST_HOST)/release/ank-agent debian/ank-agent/usr/bin/ank-agent
 	install -D -m 644 agent/config/ank-agent.conf debian/ank-agent/etc/ankaios/ank-agent.conf
 	install -D -m 644 README.md debian/ank-agent/usr/share/doc/ank-agent/README.md
-	mkdir -p debian/ank-agent/usr/share/man/man8
-	help2man --no-info --section=8 --name="Ankaios agent" \
-		target/$(RUST_HOST)/release/ank-agent \
-		-o debian/ank-agent/usr/share/man/man8/ank-agent.8
 	# CLI
 	install -D -m 755 target/$(RUST_HOST)/release/ank debian/ank/usr/bin/ank
 	install -D -m 644 ank/config/ank.conf debian/ank/etc/ankaios/ank.conf
 	install -D -m 644 README.md debian/ank/usr/share/doc/ank/README.md
+	# Man pages
+	tools/generate_man_pages.sh target/$(RUST_HOST)/release debian/.man
+	mkdir -p debian/ank-server/usr/share/man/man8
+	install -m 644 debian/.man/man8/ank-server.8 debian/ank-server/usr/share/man/man8/
+	mkdir -p debian/ank-agent/usr/share/man/man8
+	install -m 644 debian/.man/man8/ank-agent.8 debian/ank-agent/usr/share/man/man8/
 	mkdir -p debian/ank/usr/share/man/man1
-	help2man --no-info --section=1 --name="Ankaios CLI" \
-		target/$(RUST_HOST)/release/ank \
-		-o debian/ank/usr/share/man/man1/ank.1
+	find debian/.man/man1 -name '*.1' -exec install -m 644 {} debian/ank/usr/share/man/man1/ \;
 	# Meta-Package
 	install -D -m 644 README.md debian/ankaios/usr/share/doc/ankaios/README.md
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf debian/.man
 
 override_dh_installsystemd:
 	dh_installsystemd -p ank-server ank-server.service
