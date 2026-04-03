@@ -106,6 +106,8 @@ write_service() {
     cat > "$BASE_DIR/debian/$exec_name.service" << EOF
 [Unit]
 Description=${description}
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Environment="RUST_LOG=${log_level}"
