@@ -28,8 +28,8 @@
 #   REVISION              build revision filter, e.g. 1 (default: empty = not filtered)
 #   REPOSITORY            Nexus repository name (default: ankaios-apt)
 
-import json, os
-import urllib.request, urllib.parse, base64
+import json, os, sys
+import urllib.request, urllib.parse, urllib.error, base64
 
 NEXUS_URL = "https://repo.eclipse.org"
 
@@ -40,6 +40,10 @@ version = os.environ.get("VERSION", "*")
 architecture = os.environ.get("ARCHITECTURE", "*")
 revision = os.environ.get("REVISION", "")
 repository = os.environ.get("REPOSITORY", "ankaios-apt")
+
+if revision and version == "*":
+    print("Error: REVISION requires VERSION to be set.", file=sys.stderr)
+    sys.exit(1)
 
 full_version = f"{version}-{revision}" if revision else version
 
@@ -54,6 +58,7 @@ headers = {"Authorization": f"Basic {credentials}", "Accept": "application/json"
 
 continuation_token = None
 total_deleted = 0
+failed = 0
 
 while True:
     query = dict(params)
@@ -85,12 +90,19 @@ while True:
             method="DELETE",
             headers=headers,
         )
-        with urllib.request.urlopen(del_req) as resp:
-            pass
-        total_deleted += 1
+        try:
+            with urllib.request.urlopen(del_req) as resp:
+                pass
+            total_deleted += 1
+        except urllib.error.HTTPError as e:
+            print(f"Error: failed to delete {name} {ver} {arch} ({component_id}): HTTP {e.code} {e.reason}", file=sys.stderr)
+            failed += 1
 
     continuation_token = data.get("continuationToken")
     if not continuation_token:
         break
 
 print(f"Deleted {total_deleted} component(s).")
+if failed:
+    print(f"Failed to delete {failed} component(s).", file=sys.stderr)
+    sys.exit(1)
