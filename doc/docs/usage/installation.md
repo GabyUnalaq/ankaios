@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD024 -->
+
 # Installation
 
 ## Express installation
@@ -89,7 +91,7 @@ curl -sfL https://github.com/eclipse-ankaios/ankaios/releases/download/<version>
 
 For available versions see the [list of releases](https://github.com/eclipse-ankaios/ankaios/tags).
 
-**Set the log level for `ank-server` and `ank-agent` services**
+#### Set the log level for `ank-server` and `ank-agent` services
 
 To configure the log levels for `ank-server` and `ank-agent` during the installation process using the provided environment variables, follow these steps:
 
@@ -111,7 +113,7 @@ To configure the log levels for `ank-server` and `ank-agent` during the installa
 
 Now, both services will output logs according to the specified log levels. If no explicit value was provided during installation, both services will default to `info` log level. You can always change the log level by updating the environment variables and reinstalling the services.
 
-**Uninstall**
+#### Uninstall
 
 If Ankaios has been installed with the installation script, it can be uninstalled with:
 
@@ -154,7 +156,7 @@ The `ankaios` meta-package installs all components. Individual packages can be i
 
 The packages are compatible with Ubuntu 22.04+, Debian 12+ and other distributions based on glibc 2.35 or later.
 
-**Uninstall**
+#### Uninstall
 
 ```shell
 sudo apt-get remove ankaios
