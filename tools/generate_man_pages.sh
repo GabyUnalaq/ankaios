@@ -65,10 +65,11 @@ has_sub() {
 # Discover subcommands at runtime
 SUBCOMMANDS=$(get_ank_subcommands)
 
-# --- ank(1) ---
 INCLUDE=$(mktemp --suffix=.h2m)
-trap 'rm -f "$INCLUDE"' EXIT
+WRAPPER=$(mktemp)
+trap 'rm -f "$INCLUDE" "$WRAPPER"' EXIT
 
+# --- ank(1) ---
 {
     echo "[see also]"
     for cmd in ${SUBCOMMANDS}; do
@@ -93,9 +94,6 @@ echo "Generated $OUTPUT_DIR/man8/ank-agent.8"
 
 # --- ank-<subcommand>(1) ---
 for cmd in ${SUBCOMMANDS}; do
-    WRAPPER=$(mktemp)
-    INCLUDE=$(mktemp --suffix=.h2m)
-
     # Wrapper script: help2man invokes the binary with --help / --version.
     # Redirect --help to "ank <subcommand> --help".
     # Patch --version to output "ank-<subcommand> <version>" so that help2man
@@ -103,7 +101,7 @@ for cmd in ${SUBCOMMANDS}; do
     cat > "$WRAPPER" << WRAPPER_EOF
 #!/bin/bash
 case "\$1" in
-  --help)    exec "${ANK}" ${cmd} --help ;;
+  --help)    "${ANK}" ${cmd} --help ;;
   --version) "${ANK}" --version | sed "s/^ank /ank-${cmd} /" ;;
   *)         exit 1 ;;
 esac
@@ -130,6 +128,4 @@ INCLUDE_EOF
         --include="$INCLUDE" \
         "$WRAPPER" -o "$OUTPUT_DIR/man1/ank-${cmd}.1"
     echo "Generated $OUTPUT_DIR/man1/ank-${cmd}.1"
-
-    rm -f "$WRAPPER" "$INCLUDE"
 done
