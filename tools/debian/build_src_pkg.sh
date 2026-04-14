@@ -49,8 +49,8 @@ Section: embedded
 Priority: optional
 Maintainer: Eclipse Ankaios <ankaios-dev@eclipse.org>
 Build-Depends: debhelper-compat (= 13),
- rustc-1.89 (>= 1.89.0) | rustc (>= 1.89.0),
- cargo-1.89 | cargo (>= 1.89.0),
+ rustc-1.89,
+ cargo-1.89,
  protobuf-compiler,
  help2man
 Standards-Version: 4.6.2
@@ -137,14 +137,11 @@ write_rules() {
     cat > "$BASE_DIR/debian/rules" <<'EOF'
 #!/usr/bin/make -f
 
-# Use Rust 1.89 versioned packages from apt.
 export RUSTC = /usr/bin/rustc-1.89
 export CARGO = /usr/bin/cargo-1.89
 export CARGO_HOME = $(CURDIR)/debian/.cargo
 
-# Derive the Rust target triple from DEB_HOST_GNU_TYPE.
-DEB_HOST_GNU_TYPE := $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-RUST_HOST := $(subst -linux-gnu,-unknown-linux-gnu,$(DEB_HOST_GNU_TYPE))
+RUST_HOST := $(shell $(RUSTC) --print host)
 
 %:
 	dh $@
