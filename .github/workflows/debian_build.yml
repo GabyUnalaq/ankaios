@@ -86,7 +86,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          deps=$(grep '^Build-Depends:' ./dist/src/ankaios_*.dsc | sed 's/^Build-Depends: //')
+          deps=$(sed -n 's/^Build-Depends: //p' ./dist/src/ankaios_*.dsc)
           sudo apt-get satisfy -y "$deps"
 
       - name: Build binary packages

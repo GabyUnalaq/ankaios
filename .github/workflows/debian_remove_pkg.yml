@@ -19,7 +19,7 @@ on:
         type: string
         default: "*"
       revision:
-        description: "Build revision (e.g. 1). Leave empty to ignore."
+        description: "Build revision (e.g. 1). Leave empty to match the version alone."
         required: false
         type: string
         default: ""
